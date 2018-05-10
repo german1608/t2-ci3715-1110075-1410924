@@ -45,19 +45,27 @@ class TestCalcularPrecio(unittest.TestCase):
     def setUp(self):
         self.tarifa_entre_semana = Decimal(40)
         self.tarifa_fin_semana = Decimal(50)
+        self.lunes = {
+            'day': 7,
+            'month': 5,
+            'year': 2018
+        }
+        self.domingo = {
+            'day': 13,
+            'month': 5,
+            'year': 2018
+        }
         self.tarifa = Tarifa(self.tarifa_entre_semana, self.tarifa_fin_semana)
 
     # Caso borde: 15min
     def test_quince_minutos_exactos_entre_semana(self):
-        # El 9 de mayo del 2018 fue un dia miercoles
-        fecha_inicio = datetime.datetime(year=2018, month=5, day=9)
+        fecha_inicio = datetime.datetime(**self.lunes)
         quince_minutos = datetime.timedelta(minutes=15)
         periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_entre_semana)
 
     def test_quince_minutos_exactos_fin_de_semana(self):
-        # sabado 12 de mayo del 2018
-        fecha_inicio = datetime.datetime(year=2018, month=5, day=12)
+        fecha_inicio = datetime.datetime(**self.domingo)
         quince_minutos = datetime.timedelta(minutes=15)
         periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana)
@@ -81,10 +89,8 @@ class TestCalcularPrecio(unittest.TestCase):
         self.assertRaises(ValueError, calcularPrecio, self.tarifa, [today])
         self.assertRaises(ValueError, calcularPrecio, self.tarifa, [today, today, today])
 
-
-
     def test_menor_quince_minutos(self):
-        fecha_inicio = datetime.datetime(year=2018, month=5, day=12)
+        fecha_inicio = datetime.datetime(**self.domingo)
         catorce_minutos_y_pico = datetime.timedelta(minutes=14, seconds=59)
         periodo_trabajo = [fecha_inicio, fecha_inicio + catorce_minutos_y_pico]
         self.assertRaises(ValueError, calcularPrecio, self.tarifa, periodo_trabajo)
