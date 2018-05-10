@@ -14,6 +14,9 @@ def calcularPrecio(tarifa,tiempoDeServicio):
     #Segundo argumento debe ser de tipo lista
     if not isinstance(tiempoDeServicio, list):
         raise TypeError ("ERROR: Segundo argumento debe ser de tipo lista")
+    #el tamanho de la lista debe ser 2
+    if len(tiempoDeServicio) != 2:
+        raise ValueError("ERROR: el tamanho de la lista debe ser 2")
     #Primer elemento de la lista debe ser de tipo datetime
     if not isinstance(tiempoDeServicio[0], datetime.datetime):
         raise TypeError ("ERROR: Primer elemento de la lista debe ser de tipo datetime")
@@ -28,7 +31,7 @@ def calcularPrecio(tarifa,tiempoDeServicio):
         raise ValueError ("ERROR: debe durar maximo 7 dias en el servicio")
     if (tiempoDeServicio[1].minute - tiempoDeServicio[0].minute < 15):
         raise ValueError ("ERROR: debe durar al menos 15 minutes en el servicio")
-
+    
     '''
     Caso_1: entra y sale en un mismo dia.
     '''
