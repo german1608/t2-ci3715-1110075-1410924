@@ -134,5 +134,23 @@ class TestCalcularPrecio(unittest.TestCase):
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
             self.tarifa_entre_semana * 12 + self.tarifa_fin_semana * 12)
 
+    def test_valor_maximo_rango(self):
+        # para esto, el resultado maximo debe sr igual en todos los casos.
+        fecha_inicio = datetime.datetime(**self.lunes)
+        siete_dias = datetime.timedelta(days=6, hours=23, minutes=59, seconds=59)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + siete_dias]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
+            self.tarifa_fin_semana * 48 + self.tarifa_entre_semana * 5 * 24)
+
+        fecha_inicio = fecha_inicio + datetime.timedelta(days=1)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + siete_dias]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
+            self.tarifa_fin_semana * 48 + self.tarifa_entre_semana * 5 * 24)
+
+        fecha_inicio = datetime.datetime(**self.lunes) + datetime.timedelta(hours=12)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + siete_dias]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
+            self.tarifa_fin_semana * 48 + self.tarifa_entre_semana * 5 * 24)
+
 if __name__ == '__main__':
     unittest.main()
