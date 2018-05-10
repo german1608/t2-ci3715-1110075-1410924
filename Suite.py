@@ -99,7 +99,7 @@ class TestCalcularPrecio(unittest.TestCase):
         fecha_inicio = datetime.datetime(**self.domingo)
         hora_y_quince_minutos = datetime.timedelta(hours=1, minutes=15)
         periodo_trabajo = [fecha_inicio, fecha_inicio + hora_y_quince_minutos]
-        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana)
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana * 2)
 
 if __name__ == '__main__':
     unittest.main()
