@@ -73,7 +73,13 @@ class TestCalcularPrecio(unittest.TestCase):
         self.assertRaises(TypeError, calcularPrecio, self.tarifa, [1, despues])
         self.assertRaises(TypeError, calcularPrecio, self.tarifa, [today, 1])
         # segundo argumento debe cumplir que el periodo debe tener sentido
-        self.assertRaises(TypeError, calcularPrecio, self.tarifa, [today, antes])
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [today, antes])
+        # deberia lanzar un ValueError cuando el segundo parametro
+        # sea una lista de longitud distinta a 2
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [])
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [today])
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [today, today, today])
+
 
 
     def test_menor_quince_minutos(self):
