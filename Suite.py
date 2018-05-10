@@ -69,6 +69,7 @@ class TestCalcularPrecio(unittest.TestCase):
         despues = today + un_segundo
         # primer argumento debe ser tarifa
         self.assertRaises(TypeError, calcularPrecio, [1,2], [today, despues])
+        self.assertRaises(TypeError, calcularPrecio, object(), [today, despues])
         # segundo argmento debe ser lista de datetimes
         self.assertRaises(TypeError, calcularPrecio, self.tarifa, [1, despues])
         self.assertRaises(TypeError, calcularPrecio, self.tarifa, [today, 1])
