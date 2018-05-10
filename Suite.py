@@ -116,7 +116,23 @@ class TestCalcularPrecio(unittest.TestCase):
         hora_y_quince_minutos = datetime.timedelta(hours=1, minutes=15)
         periodo_trabajo = [fecha_inicio, fecha_inicio + hora_y_quince_minutos]
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana * 2)
+        fecha_inicio = datetime.datetime(**self.lunes)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + hora_y_quince_minutos]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_entre_semana * 2)
 
+    def test_2_dias_alternados(self):
+        fecha_inicio = datetime.datetime(**self.domingo)
+        un_dia = datetime.timedelta(days=2)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + un_dia]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
+            self.tarifa_entre_semana * 24 + self.tarifa_fin_semana * 24)
+
+    def test_medio_domingo_medio_lunes(self):
+        doce_horas = datetime.timedelta(hours=12)
+        fecha_inicio = datetime.datetime(**self.domingo) + doce_horas
+        periodo_trabajo = [fecha_inicio, fecha_inicio + doce_horas * 2]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo),
+            self.tarifa_entre_semana * 12 + self.tarifa_fin_semana * 12)
 
 if __name__ == '__main__':
     unittest.main()
