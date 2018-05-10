@@ -6,6 +6,9 @@ import unittest
 from decimal import Decimal
 from Tarifa import Tarifa
 
+def es_fin_de_semana(date):
+    return 5 <= date.weekday() <= 6
+
 def calcularPrecio(tarifa,tiempoDeServicio):
     
     #Primer argumento debe ser de tipo object
@@ -34,38 +37,20 @@ def calcularPrecio(tarifa,tiempoDeServicio):
         raise ValueError("ERROR: debe ser maximo 7 dias")
 
     if (diferencia.days == 0 and diferencia.seconds < 15 * 60):
-        print('hla')
         raise ValueError ("ERROR: debe durar al menos 15 minutes en el servicio")
     
     '''
     Caso_1: entra y sale en un mismo dia.
     '''
-    cantHrs = 1
-    monto = 1
-    #Quice minutos exactos entre semana
-    if (fecha_inicio.weekday() >=0 and fecha_inicio.weekday() <=4 and 
-        fecha_inicio.weekday() == fecha_final.weekday()):
-        if (fecha_final.minute - fecha_inicio.minute == 15):
-            monto = monto*tarifa.tarifa_entre_semana
-        return monto
-    #Quice minutos exactos en el fin de semana
-    if (fecha_inicio.weekday() >=5 and fecha_inicio.weekday() <=6 and 
-        fecha_inicio.weekday() == fecha_final.weekday()):
-        if (fecha_final.minute - fecha_inicio.minute == 15):
-            monto = monto*tarifa.tarifa_fin_semana
-        return monto
+    fecha_actual = fecha_inicio
+    monto_total = 0
+    tarifa_entre_semana = tarifa.tarifa_entre_semana
+    tarifa_fin_semana = tarifa.tarifa_fin_semana
+    while fecha_actual < fecha_final:
+        if es_fin_de_semana(fecha_actual):
+            monto_total += tarifa_fin_semana
+        else:
+            monto_total += tarifa_entre_semana
+        fecha_actual = fecha_actual + datetime.timedelta(hours=1)
 
-    if (fecha_final.weekday() == fecha_inicio.weekday()):
-        cantHrs = (fecha_final.hour - fecha_inicio.hour)
-        #Except para al menos 15 minutos en el servicio
-        if (fecha_final.hour == fecha_inicio.hour):
-            cantHrs = 1
-        monto = cantHrs*tarifa.tarifa_entre_semana
-        return monto
-    else:
-        for i in range(fecha_inicio.weekday(), fecha_final.weekday()):
-            for j in range(fecha_inicio.hour, 24):
-                cantHrs = cantHrs +1
-                monto = tarifa_entre_semana*cantHrs
-        return monto
-    print ("Duro {0:} hr en el servicio. Se le cancelan Bs.{1:}".format(cantHrs, monto))
+    return monto_total
