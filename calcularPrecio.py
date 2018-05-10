@@ -17,19 +17,20 @@ def calcularPrecio(tarifa,tiempoDeServicio):
     #el tamanho de la lista debe ser 2
     if len(tiempoDeServicio) != 2:
         raise ValueError("ERROR: el tamanho de la lista debe ser 2")
+
+    fecha_inicio, fecha_final = tiempoDeServicio
     #Primer elemento de la lista debe ser de tipo datetime
-    if not isinstance(tiempoDeServicio[0], datetime.datetime):
+    if not isinstance(fecha_inicio, datetime.datetime):
         raise TypeError ("ERROR: Primer elemento de la lista debe ser de tipo datetime")
     #Segundo elemento de la lista debe ser de tipo datetime
-    if not isinstance(tiempoDeServicio[1], datetime.datetime):
+    if not isinstance(fecha_final, datetime.datetime):
         raise TypeError ("ERROR: Segundo elemento de la lista debe ser de tipo datetime")
 
-    if (tiempoDeServicio[1] < tiempoDeServicio[0]):
+    if (fecha_final < fecha_inicio):
         raise ValueError ("ERROR:Tiempo de servicio debe tener sentido")
 
-    if abs(tiempoDeServicio[1].weekday() - tiempoDeServicio[0].weekday()) >7:
-        raise ValueError ("ERROR: debe durar maximo 7 dias en el servicio")
-    if (tiempoDeServicio[1].minute - tiempoDeServicio[0].minute < 15):
+    if (fecha_final.minute - fecha_inicio.minute < 15):
+        print('hla')
         raise ValueError ("ERROR: debe durar al menos 15 minutes en el servicio")
     
     '''
@@ -38,30 +39,28 @@ def calcularPrecio(tarifa,tiempoDeServicio):
     cantHrs = 1
     monto = 1
     #Quice minutos exactos entre semana
-    if (tiempoDeServicio[0].weekday() >=0 and tiempoDeServicio[0].weekday() <=4 and 
-        tiempoDeServicio[0].weekday() == tiempoDeServicio[1].weekday()):
-        if (tiempoDeServicio[1].minute - tiempoDeServicio[0].minute == 15):
+    if (fecha_inicio.weekday() >=0 and fecha_inicio.weekday() <=4 and 
+        fecha_inicio.weekday() == fecha_final.weekday()):
+        if (fecha_final.minute - fecha_inicio.minute == 15):
             monto = monto*tarifa.tarifa_entre_semana
-            print monto
         return monto
     #Quice minutos exactos en el fin de semana
-    if (tiempoDeServicio[0].weekday() >=5 and tiempoDeServicio[0].weekday() <=6 and 
-        tiempoDeServicio[0].weekday() == tiempoDeServicio[1].weekday()):
-        if (tiempoDeServicio[1].minute - tiempoDeServicio[0].minute == 15):
+    if (fecha_inicio.weekday() >=5 and fecha_inicio.weekday() <=6 and 
+        fecha_inicio.weekday() == fecha_final.weekday()):
+        if (fecha_final.minute - fecha_inicio.minute == 15):
             monto = monto*tarifa.tarifa_fin_semana
-            print monto
         return monto
 
-    if (tiempoDeServicio[1].weekday() == tiempoDeServicio[0].weekday()):
-        cantHrs = (tiempoDeServicio[1].hour - tiempoDeServicio[0].hour)
+    if (fecha_final.weekday() == fecha_inicio.weekday()):
+        cantHrs = (fecha_final.hour - fecha_inicio.hour)
         #Except para al menos 15 minutos en el servicio
-        if (tiempoDeServicio[1].hour == tiempoDeServicio[0].hour):
+        if (fecha_final.hour == fecha_inicio.hour):
             cantHrs = 1
         monto = cantHrs*tarifa.tarifa_entre_semana
         return monto
     else:
-        for i in range(tiempoDeServicio[0].weekday(), tiempoDeServicio[1].weekday()):
-            for j in range(tiempoDeServicio[0].hour, 24):
+        for i in range(fecha_inicio.weekday(), fecha_final.weekday()):
+            for j in range(fecha_inicio.hour, 24):
                 cantHrs = cantHrs +1
                 monto = tarifa_entre_semana*cantHrs
         return monto
