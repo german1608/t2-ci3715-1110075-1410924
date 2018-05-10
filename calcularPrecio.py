@@ -29,7 +29,11 @@ def calcularPrecio(tarifa,tiempoDeServicio):
     if (fecha_final < fecha_inicio):
         raise ValueError ("ERROR:Tiempo de servicio debe tener sentido")
 
-    if (fecha_final.minute - fecha_inicio.minute < 15):
+    diferencia = fecha_final - fecha_inicio
+    if (diferencia.days > 6):
+        raise ValueError("ERROR: debe ser maximo 7 dias")
+
+    if (diferencia.days == 0 and diferencia.seconds < 15 * 60):
         print('hla')
         raise ValueError ("ERROR: debe durar al menos 15 minutes en el servicio")
     
@@ -64,4 +68,4 @@ def calcularPrecio(tarifa,tiempoDeServicio):
                 cantHrs = cantHrs +1
                 monto = tarifa_entre_semana*cantHrs
         return monto
-    print "Duro %s hr en el servicio. Se le cancelan Bs.%s " %(cantHrs, monto)        
+    print ("Duro {0:} hr en el servicio. Se le cancelan Bs.{1:}".format(cantHrs, monto))

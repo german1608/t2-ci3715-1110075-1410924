@@ -94,12 +94,29 @@ class TestCalcularPrecio(unittest.TestCase):
         catorce_minutos_y_pico = datetime.timedelta(minutes=14, seconds=59)
         periodo_trabajo = [fecha_inicio, fecha_inicio + catorce_minutos_y_pico]
         self.assertRaises(ValueError, calcularPrecio, self.tarifa, periodo_trabajo)
+        # Esto no deberia lanzar ValueError
+        calcularPrecio(self.tarifa, [fecha_inicio, fecha_inicio + datetime.timedelta(days=1) + catorce_minutos_y_pico])
+
+    def test_maximo_7_dias(self):
+        # las dos siguientes fechas presentan un rango valido
+        fecha_inicio = datetime.datetime(**self.lunes)
+        fecha_final = datetime.datetime(**self.domingo)
+        dias = []
+        for i in range(1, 7):
+            dias.append(datetime.timedelta(days=i))
+        # lunes a lunes
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [fecha_inicio, fecha_final + dias[0]])
+        # martes a martes
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [fecha_inicio + dias[0], fecha_final + dias[1]])
+        # martes al jueves de la siguiente
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, [fecha_inicio + dias[1], fecha_final + dias[2]])
 
     def test_hora_y_quince_minutos(self):
         fecha_inicio = datetime.datetime(**self.domingo)
         hora_y_quince_minutos = datetime.timedelta(hours=1, minutes=15)
         periodo_trabajo = [fecha_inicio, fecha_inicio + hora_y_quince_minutos]
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana * 2)
+
 
 if __name__ == '__main__':
     unittest.main()
