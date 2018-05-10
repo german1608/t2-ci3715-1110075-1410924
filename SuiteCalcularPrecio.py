@@ -70,20 +70,20 @@ class TestCalcularPrecio(unittest.TestCase):
         self.tarifa_fin_semana = 50
         self.tarifa = Tarifa(self.tarifa_entre_semana, self.tarifa_fin_semana)
 
-	# Caso borde: 15min
-	def test_quince_minutos_exactos_entre_semana(self):
-		# El 9 de mayo del 2018 fue un dia miercoles
-		fecha_inicio = datetime.datetime(year=2018, month=5, day=9)
-		quince_minutos = datetime.timedelta(minutes=15)
-		periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
-		self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_entre_semana)
+    # Caso borde: 15min
+    def test_quince_minutos_exactos_entre_semana(self):
+        # El 9 de mayo del 2018 fue un dia miercoles
+        fecha_inicio = datetime.datetime(year=2018, month=5, day=9)
+        quince_minutos = datetime.timedelta(minutes=15)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_entre_semana)
 
-	def test_quince_minutos_exactos_fin_de_semana(self):
-		# sabado 12 de mayo del 2018
-		fecha_inicio = datetime.datetime(year=2018, month=5, day=12)
-		quince_minutos = datetime.timedelta(minutes=15)
-		periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
-		self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana)
+    def test_quince_minutos_exactos_fin_de_semana(self):
+        # sabado 12 de mayo del 2018
+        fecha_inicio = datetime.datetime(year=2018, month=5, day=12)
+        quince_minutos = datetime.timedelta(minutes=15)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
+        self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana)
 
 if __name__ == '__main__':
     unittest.main()
