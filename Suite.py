@@ -22,42 +22,19 @@ class TestTarifa(unittest.TestCase):
     def test_primer_argumento(self):
         # Prueba que el primer argumento debe ser tipo entero,
         # en caso contrario, lanza un error ValueError
-        try:
-            tarifa = Tarifa("hola", 1)
-            self.fail(self.failure_msg)
-        except ValueError:
-            pass
-
-        try:
-            tarifa = Tarifa([], 2)
-            self.fail(self.failure_msg)
-        except ValueError:
-            pass
-
-        tarifa = Tarifa(2, 2) # Esto no deberia lanzar error pues 2 es int
-
+        self.assertRaises(TypeError, Tarifa, "hola", Decimal(1))
+        self.assertRaises(TypeError, Tarifa, [], Decimal(2))
+        tarifa = Tarifa(Decimal(2), Decimal(2)) # Esto no deberia lanzar error pues 2 es int
 
     def test_segundo_argumento(self):
         # Igual que el anterior, pero con el segundo argumento
-        try:          
-            tarifa = Tarifa(1, "hola")
-            self.fail(self.failure_msg)
-        except ValueError:
-            pass
+        self.assertRaises(TypeError, Tarifa, Decimal(1), "hola")
+        self.assertRaises(TypeError, Tarifa, Decimal(1), [])
+        tarifa = Tarifa(Decimal(2), Decimal(2))
 
-        try:
-            tarifa = Tarifa(1, [])
-            self.fail(self.failure_msg)
-        except ValueError:
-            pass
-
-        tarifa = Tarifa(2, 2) # Esto no deberia lanzar error pues 2 es int
-
-    def test_atributos_son_decimal(self):
-        # Prueba que los tipos de los atributos sean decimal.
-        tarifa = Tarifa(40, 40)
-        self.assertEqual(type(tarifa.tarifa_entre_semana), Decimal, 'tarifa_entre_semana debe ser de tipo decimal')
-        self.assertEqual(type(tarifa.tarifa_fin_semana), Decimal, 'tarifa_fin_semana debe ser de tipo decimal')
+    def test_numeros_negativos(self):
+        self.assertRaises(ValueError, Tarifa, Decimal(-1), Decimal(1))
+        self.assertRaises(ValueError, Tarifa, Decimal(1), Decimal(-11))
 
 class TestCalcularPrecio(unittest.TestCase):
     """
@@ -66,8 +43,8 @@ class TestCalcularPrecio(unittest.TestCase):
 
     # todas las pruebas usaran el mismo objeto Tarifa
     def setUp(self):
-        self.tarifa_entre_semana = 40
-        self.tarifa_fin_semana = 50
+        self.tarifa_entre_semana = Decimal(40)
+        self.tarifa_fin_semana = Decimal(50)
         self.tarifa = Tarifa(self.tarifa_entre_semana, self.tarifa_fin_semana)
 
     # Caso borde: 15min
@@ -85,5 +62,24 @@ class TestCalcularPrecio(unittest.TestCase):
         periodo_trabajo = [fecha_inicio, fecha_inicio + quince_minutos]
         self.assertEqual(calcularPrecio(self.tarifa, periodo_trabajo), self.tarifa_fin_semana)
 
+    def test_tipos_argumentos(self):
+        today = datetime.datetime.today()
+        un_segundo = datetime.timedelta(seconds=1)
+        antes = today - un_segundo
+        despues = today + un_segundo
+        # primer argumento debe ser tarifa
+        self.assertRaises(TypeError, calcularPrecio, [1,2], [today, despues])
+        # segundo argmento debe ser lista de datetimes
+        self.assertRaises(TypeError, calcularPrecio, self.tarifa, [1, despues])
+        self.assertRaises(TypeError, calcularPrecio, self.tarifa, [today, 1])
+        # segundo argumento debe cumplir que el periodo debe tener sentido
+        self.assertRaises(TypeError, calcularPrecio, self.tarifa, [today, antes])
+
+
+    def test_menor_quince_minutos(self):
+        fecha_inicio = datetime.datetime(year=2018, month=5, day=12)
+        catorce_minutos_y_pico = datetime.timedelta(minutes=14, seconds=59)
+        periodo_trabajo = [fecha_inicio, fecha_inicio + catorce_minutos_y_pico]
+        self.assertRaises(ValueError, calcularPrecio, self.tarifa, periodo_trabajo)
 if __name__ == '__main__':
     unittest.main()
